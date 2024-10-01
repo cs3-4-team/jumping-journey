@@ -1,4 +1,4 @@
-class CanvasHelper {
+export class CanvasHelper {
   private canvas: HTMLCanvasElement;
 
   private context: CanvasRenderingContext2D;
