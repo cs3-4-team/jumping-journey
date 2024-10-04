@@ -12,6 +12,14 @@ export class CanvasHelper {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
+  getWidth(): number {
+    return this.canvas.width;
+  }
+
+  getHeight(): number {
+    return this.canvas.height;
+  }
+
   setFillColor(color: string): void {
     this.context.fillStyle = color;
   }
