@@ -1,3 +1,5 @@
+import type { CanvasHelper } from '@/shared/CanvasHelper';
+
 export abstract class AbstractCell {
   protected type: string;
 
@@ -15,6 +17,11 @@ export abstract class AbstractCell {
     this.x = x;
     this.y = y;
     this.color = color;
+  }
+
+  draw(canvasHelper: CanvasHelper) {
+    canvasHelper.setFillColor(this.color);
+    canvasHelper.drawRectangle(this.x, this.y, 50, 50); // Заменить размеры клеток на переменные
   }
 
   getType(): string {
