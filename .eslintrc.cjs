@@ -25,6 +25,7 @@ module.exports = {
         ]
       }
     ],
+    "@stylistic/space-before-function-paren": ["error", "never"],
     '@stylistic/no-multi-spaces': 'error',
     '@stylistic/no-tabs': 'error',
     '@stylistic/lines-between-class-members': ['error', 'always'],
