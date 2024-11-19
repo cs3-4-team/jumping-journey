@@ -1,7 +1,8 @@
 import type { CanvasHelper } from '@/shared/CanvasHelper';
-import { Vector } from '../vector/Vector';
+import { Vector } from '@/shared/vector/Vector';
 import type { Lava } from '../lava';
-import type Platform from '../platform/Platform';
+import type { Platform } from '../platform';
+import type { Ground } from '../ground';
 
 export default class Player {
   private velocity: Vector;
@@ -24,7 +25,7 @@ export default class Player {
     private color: string
   ) {
     this.velocity = new Vector();
-    this.gravity = 0.64;
+    this.gravity = 0.45;
     this.bounce = -0.4;
     this.isJumping = false;
     this.onPlatform = false;
@@ -36,7 +37,7 @@ export default class Player {
     this.canvasHelper.drawCircle(this.x, this.y, this.radius);
   }
 
-  update(platforms: Platform[], lavas: Lava[], deltaTime: number) {
+  update(platforms: Array<Ground | Platform>, lavas: Lava[], deltaTime: number) {
     const deltaSeconds = deltaTime / 20;
 
     this.velocity.y += (this.gravity * deltaSeconds) / 1.2;
@@ -76,18 +77,6 @@ export default class Player {
       this.onPlatform = true;
     }
 
-    if (this.x + this.radius > this.canvasHelper.getWidth() || this.x - this.radius < 0) {
-      this.velocity.x = -this.velocity.x;
-    }
-
-    if (!this.isJumping && this.onPlatform) {
-      this.velocity.x *= this.friction;
-
-      if (Math.abs(this.velocity.x) < 0.5) {
-        this.velocity.x = 0;
-      }
-    }
-
     lavas.forEach((lava) => {
       if (
         this.y + this.radius > lava.getPosition().y &&
@@ -106,8 +95,12 @@ export default class Player {
       this.onPlatform = true;
     }
 
-    if (this.x + this.radius > this.canvasHelper.getWidth() || this.x - this.radius < 0) {
+    if (this.x + this.radius > this.canvasHelper.getWidth()) {
       this.velocity.x = -this.velocity.x;
+      this.x = this.canvasHelper.getWidth() - this.radius;
+    } else if (this.x - this.radius < 0) {
+      this.velocity.x = -this.velocity.x;
+      this.x = this.radius;
     }
 
     if (!this.isJumping && this.onPlatform) {

@@ -5,9 +5,9 @@ export abstract class AbstractCell {
 
   protected isPermeability: boolean;
 
-  protected x: number;
+  x: number;
 
-  protected y: number;
+  y: number;
 
   protected color: string;
 

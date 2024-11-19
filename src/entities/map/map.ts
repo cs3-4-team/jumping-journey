@@ -2,10 +2,10 @@ import { CanvasHelper } from '@/shared/CanvasHelper';
 import { Lava } from '../lava';
 import { Coin } from '../coin';
 import { Ground } from '../ground';
-import { Matrix } from '../../shared/matrix'; // Путь к файлу с классом Matrix
+import { Matrix } from '@/shared/matrix'; // Путь к файлу с классом Matrix
 
 // Создаем объект CanvasHelper
-const canvasHelper = new CanvasHelper('myCanvas');
+const canvasHelper = new CanvasHelper('gameCanvas');
 
 // Типы для карты (земля, лава, монета)
 const CellType = {
@@ -92,6 +92,6 @@ function drawMap() {
 
 // Рисуем карту
 
-drawMap();
+//drawMap();
 
 export { drawMap, mapData };

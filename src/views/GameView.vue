@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import PlatformerGame from '@/components/PlatformerGame.vue';
+import TheGame from '@/components/TheGame.vue';
 </script>
 
 <template>
-  <PlatformerGame />
+  <TheGame />
 </template>

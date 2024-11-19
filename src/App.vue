@@ -10,7 +10,7 @@ const route = useRoute();
     <div class="wrapper">
       <nav v-show="route.path === '/'" mode="fade">
         <RouterLink to="/game">Play🎮</RouterLink>
-        <a href="https://github.com/cs3-4-team/jumping-journey" target="_blank" rel="noopener">
+        <a href="https://github.com/cs3-4-team/platformer-game" target="_blank" rel="noopener">
           Visit GitHub
         </a>
       </nav>
@@ -85,9 +85,9 @@ nav a:first-of-type {
     padding-right: calc(var(--section-gap) / 2);
   }
 
-  /* .logo {
+  .logo {
     margin: 0 2rem 0 0;
-  } */
+  }
 
   header .wrapper {
     display: flex;
