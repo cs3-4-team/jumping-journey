@@ -1,23 +1,70 @@
-import type { CanvasHelper } from '@/shared/CanvasHelper';
+import type { CanvasHelper } from '@/shared/canvas/CanvasHelper';
 import { Ground } from '../ground';
 import { Lava } from '../lava';
 import { Platform } from '../platform';
+import { blockSize } from './mapGenerator.const';
 
-export default class MapGenerator {
-  private canvasHelper: CanvasHelper;
+export class MapGenerator {
+  private canvasHelper;
 
-  private tileSize: number;
+  private tileSize = blockSize;
 
-  lavas: Lava[] = [];
+  private mapData;
+
+  lavas: Array<Lava> = [];
 
   platforms: Array<Platform | Ground> = [];
 
-  constructor(
-    canvasHelper: CanvasHelper,
-    private mapData: string[]
-  ) {
+  constructor(canvasHelper: CanvasHelper, mapData: string[]) {
     this.canvasHelper = canvasHelper;
-    this.tileSize = this.calculateTileSize();
+    // this.tileSize = this.calculateTileSize();
+    this.mapData = this.normalizeeSchema(mapData);
+  }
+
+  private normalizeeSchema(schema: string[]) {
+    if (!schema.length) return [];
+
+    let normalizedSchema = [...schema];
+
+    const canvasHeight = this.canvasHelper.getHeight();
+    const canvasWidth = this.canvasHelper.getWidth();
+
+    // console.log('canvasHeight', canvasHeight);
+    // console.log('canvasWidth', canvasWidth);
+
+    const canvasColBlocksCount = Math.ceil(canvasWidth / this.tileSize);
+    const canvasRowBlocksCount = Math.floor(canvasHeight / this.tileSize);
+
+    // console.log('canvasColBlocksCount', canvasColBlocksCount);
+    // console.log('canvasRowBlocksCount', canvasRowBlocksCount);
+
+    // First, normalize columns in schema
+    for (let i = 0; i < normalizedSchema.length; i++) {
+      // console.log('canvasColBlocksCount', canvasColBlocksCount);
+      // console.log('normalizedSchema[i].length', normalizedSchema[i].length);
+
+      if (normalizedSchema[i].length < canvasColBlocksCount) {
+        const schemaColsToAdd = canvasColBlocksCount - normalizedSchema[i].length;
+        const emptyBlocksToAdd = '.'.repeat(schemaColsToAdd);
+
+        normalizedSchema[i] += emptyBlocksToAdd;
+      } else if (normalizedSchema[i].length > canvasColBlocksCount) {
+        normalizedSchema[i] = normalizedSchema[i].slice(0, canvasColBlocksCount - 1);
+      }
+    }
+
+    const rowsToAdd = canvasRowBlocksCount - schema.length;
+
+    if (rowsToAdd > 0) {
+      const emptyBlocksToAdd = '.'.repeat(canvasColBlocksCount);
+      const rowsArrToAdd = new Array(rowsToAdd).fill(emptyBlocksToAdd);
+
+      normalizedSchema = [...rowsArrToAdd, ...normalizedSchema];
+    }
+
+    // console.log('normalizedSchema', normalizedSchema);
+
+    return normalizedSchema;
   }
 
   generateMap() {
@@ -42,7 +89,7 @@ export default class MapGenerator {
     const heightPerTile = canvasHeight / rows; // Height per tile
 
     // Return the smallest value to maintain aspect ratio
-    return Math.min(widthPerTile, heightPerTile);
+    return Math.max(widthPerTile, heightPerTile);
   }
 
   private drawTile(tile: string, x: number, y: number) {
@@ -50,7 +97,7 @@ export default class MapGenerator {
       case 'G': {
         const ground = new Ground(
           x,
-          this.canvasHelper.getHeight() - this.tileSize,
+          y + this.tileSize,
           this.tileSize,
           this.tileSize,
           this.canvasHelper
@@ -64,7 +111,7 @@ export default class MapGenerator {
       case 'L': {
         const lava = new Lava(
           x,
-          this.canvasHelper.getHeight() - this.tileSize,
+          y + this.tileSize,
           this.tileSize,
           this.tileSize,
           this.canvasHelper
@@ -76,7 +123,13 @@ export default class MapGenerator {
       }
 
       case 'P': {
-        const platform = new Platform(x, y, this.tileSize, this.tileSize, this.canvasHelper);
+        const platform = new Platform(
+          x,
+          y + this.tileSize,
+          this.tileSize,
+          this.tileSize,
+          this.canvasHelper
+        );
 
         this.platforms.push(platform);
         platform.draw();

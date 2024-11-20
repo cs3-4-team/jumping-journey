@@ -6,6 +6,7 @@ export class CanvasHelper {
   constructor(canvasId: string) {
     this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d')!;
+    this.resizeCanvas();
   }
 
   clearCanvas(): void {
@@ -100,10 +101,13 @@ export class CanvasHelper {
   resizeCanvas(): void {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
+
+    // console.log('window.innerWidth', window.innerWidth);
+    // console.log('window.innerHeight', window.innerHeight);
   }
 }
 
-// Пример использования:
+// Usage example:
 // const canvasHelper = new CanvasHelper('myCanvas');
 
 // canvasHelper.clearCanvas();

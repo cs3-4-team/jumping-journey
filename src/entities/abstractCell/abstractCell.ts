@@ -1,4 +1,4 @@
-import type { CanvasHelper } from '@/shared/CanvasHelper';
+import type { CanvasHelper } from '@/shared/canvas/CanvasHelper';
 
 export abstract class AbstractCell {
   protected type: string;

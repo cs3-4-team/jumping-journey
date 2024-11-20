@@ -1,5 +1,5 @@
 import { AbstractCell } from '../abstractCell';
-import { CanvasHelper } from '@/shared/CanvasHelper';
+import { CanvasHelper } from '@/shared/canvas/CanvasHelper';
 
 export class Platform extends AbstractCell {
   public width: number;

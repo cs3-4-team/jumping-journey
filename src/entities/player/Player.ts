@@ -1,4 +1,4 @@
-import type { CanvasHelper } from '@/shared/CanvasHelper';
+import type { CanvasHelper } from '@/shared/canvas/CanvasHelper';
 import { Vector } from '@/shared/vector/Vector';
 import type { Lava } from '../lava';
 import type { Platform } from '../platform';

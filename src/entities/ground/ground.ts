@@ -1,5 +1,5 @@
 import { AbstractCell } from '../abstractCell';
-import { CanvasHelper } from '@/shared/CanvasHelper';
+import { CanvasHelper } from '@/shared/canvas/CanvasHelper';
 
 export class Ground extends AbstractCell {
   public width: number;

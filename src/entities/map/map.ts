@@ -1,4 +1,4 @@
-import { CanvasHelper } from '@/shared/CanvasHelper';
+import { CanvasHelper } from '@/shared/canvas/CanvasHelper';
 import { Lava } from '../lava';
 import { Coin } from '../coin';
 import { Ground } from '../ground';
