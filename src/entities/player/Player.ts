@@ -17,6 +17,8 @@ export default class Player {
 
   private friction: number;
 
+  private isDead_: boolean = false;
+
   constructor(
     private canvasHelper: CanvasHelper,
     private x: number,
@@ -25,9 +27,10 @@ export default class Player {
     private color: string
   ) {
     this.velocity = new Vector();
-    this.gravity = 0.45;
-    this.bounce = -0.4;
+    this.gravity = 0.31;
+    this.bounce = -0.5;
     this.isJumping = false;
+    this.isDead_ = false;
     this.onPlatform = false;
     this.friction = 0.93;
   }
@@ -37,15 +40,17 @@ export default class Player {
     this.canvasHelper.drawCircle(this.x, this.y, this.radius);
   }
 
-  update(platforms: Array<Ground | Platform>, lavas: Lava[], deltaTime: number) {
-    const deltaSeconds = deltaTime / 20;
-
-    this.velocity.y += (this.gravity * deltaSeconds) / 1.2;
-
-    this.x += this.velocity.x * deltaSeconds;
-    this.y += this.velocity.y * deltaSeconds;
-
+  resetPosition() {
+    this.x = 100;
+    this.y = this.canvasHelper.getHeight() - this.radius * 10;
+    this.velocity.x = 0;
+    this.velocity.y = 0;
+    this.isJumping = false;
     this.onPlatform = false;
+    this.isDead_ = false;
+  }
+
+  private checkPlatformCollisions(platforms: Array<Ground | Platform>) {
     platforms.forEach((platform) => {
       if (
         this.y + this.radius > platform.y &&
@@ -53,7 +58,70 @@ export default class Player {
         this.x + this.radius > platform.x &&
         this.x - this.radius < platform.x + platform.width
       ) {
-        if (this.velocity.y > 0 && this.y - this.radius < platform.y) {
+        // Определяем направление коллизии
+        const fromTop = this.y - this.radius <= platform.y;
+
+        if (fromTop) {
+          this.y = platform.y - this.radius;
+          this.velocity.y = 0;
+          this.isJumping = false;
+          this.onPlatform = true;
+        }
+      }
+    });
+  }
+
+  update(platforms: Array<Ground | Platform>, lavas: Lava[], deltaTime: number) {
+    for (const lava of lavas) {
+      // Проверяем пересечение окружности с прямоугольником
+      const closestX = Math.max(
+        lava.getPosition().x,
+        Math.min(this.x, lava.getPosition().x + lava.width)
+      );
+      const closestY = Math.max(
+        lava.getPosition().y,
+        Math.min(this.y, lava.getPosition().y + lava.height)
+      );
+
+      // Вычисляем расстояние от центра шарика до ближайшей точки прямоугольника
+      const distanceX = this.x - closestX;
+      const distanceY = this.y - closestY;
+      const distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+      // Если расстояние меньше радиуса - есть коллизия
+      if (distanceSquared <= this.radius * this.radius) {
+        this.isDead_ = true;
+
+        this.checkPlatformCollisions(platforms);
+        return;
+      }
+    }
+
+    const deltaSeconds = deltaTime / 20;
+
+    this.velocity.y += (this.gravity * deltaSeconds) / 1.2;
+
+    const prevX = this.x;
+    const prevY = this.y;
+
+    this.x += this.velocity.x * deltaSeconds;
+    this.y += this.velocity.y * deltaSeconds;
+
+    this.onPlatform = false;
+
+    platforms.forEach((platform) => {
+      if (
+        this.y + this.radius > platform.y &&
+        this.y - this.radius < platform.y + platform.height &&
+        this.x + this.radius > platform.x &&
+        this.x - this.radius < platform.x + platform.width
+      ) {
+        const fromLeft = prevX + this.radius <= platform.x;
+        const fromRight = prevX - this.radius >= platform.x + platform.width;
+        const fromTop = prevY + this.radius <= platform.y;
+        const fromBottom = prevY - this.radius >= platform.y + platform.height;
+
+        if (fromTop && this.velocity.y > 0) {
           this.y = platform.y - this.radius;
           this.velocity.y = 0;
           this.isJumping = false;
@@ -63,28 +131,16 @@ export default class Player {
           if (Math.abs(this.velocity.x) < 0.001) {
             this.velocity.x = 0;
           }
-        } else if (this.velocity.y < 0 && this.y + this.radius > platform.y + platform.height) {
+        } else if (fromBottom && this.velocity.y < 0) {
           this.y = platform.y + platform.height + this.radius;
           this.velocity.y = 0;
+        } else if (fromLeft && this.velocity.x > 0) {
+          this.x = platform.x - this.radius;
+          this.velocity.x = 0;
+        } else if (fromRight && this.velocity.x < 0) {
+          this.x = platform.x + platform.width + this.radius;
+          this.velocity.x = 0;
         }
-      }
-    });
-
-    if (this.y + this.radius > this.canvasHelper.getHeight()) {
-      this.y = this.canvasHelper.getHeight() - this.radius;
-      this.velocity.y *= this.bounce;
-      this.isJumping = false;
-      this.onPlatform = true;
-    }
-
-    lavas.forEach((lava) => {
-      if (
-        this.y + this.radius > lava.getPosition().y &&
-        this.y - this.radius < lava.getPosition().y + lava.height &&
-        this.x + this.radius > lava.getPosition().x &&
-        this.x - this.radius < lava.getPosition().x + lava.width
-      ) {
-        this.resetPosition();
       }
     });
 
@@ -114,7 +170,7 @@ export default class Player {
 
   jump() {
     if (this.onPlatform) {
-      this.velocity.y = -10;
+      this.velocity.y = -8;
       this.isJumping = true;
     }
   }
@@ -149,12 +205,7 @@ export default class Player {
     return this.isJumping;
   }
 
-  private resetPosition() {
-    this.x = 100;
-    this.y = this.canvasHelper.getHeight() - 25;
-    this.velocity.x = 0;
-    this.velocity.y = 0;
-    this.isJumping = false;
-    this.onPlatform = false;
+  isDead(): boolean {
+    return this.isDead_;
   }
 }
