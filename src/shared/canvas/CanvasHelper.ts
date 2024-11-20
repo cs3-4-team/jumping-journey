@@ -105,6 +105,10 @@ export class CanvasHelper {
     // console.log('window.innerWidth', window.innerWidth);
     // console.log('window.innerHeight', window.innerHeight);
   }
+
+  getContext(): CanvasRenderingContext2D {
+    return this.context;
+  }
 }
 
 // Usage example:

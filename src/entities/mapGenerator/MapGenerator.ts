@@ -29,14 +29,14 @@ export class MapGenerator {
     const canvasHeight = this.canvasHelper.getHeight();
     const canvasWidth = this.canvasHelper.getWidth();
 
-    // console.log('canvasHeight', canvasHeight);
-    // console.log('canvasWidth', canvasWidth);
+    console.log('canvasHeight', canvasHeight);
+    console.log('canvasWidth', canvasWidth);
 
     const canvasColBlocksCount = Math.ceil(canvasWidth / this.tileSize);
     const canvasRowBlocksCount = Math.floor(canvasHeight / this.tileSize);
 
-    // console.log('canvasColBlocksCount', canvasColBlocksCount);
-    // console.log('canvasRowBlocksCount', canvasRowBlocksCount);
+    console.log('canvasColBlocksCount', canvasColBlocksCount);
+    console.log('canvasRowBlocksCount', canvasRowBlocksCount);
 
     // First, normalize columns in schema
     for (let i = 0; i < normalizedSchema.length; i++) {
@@ -95,13 +95,7 @@ export class MapGenerator {
   private drawTile(tile: string, x: number, y: number) {
     switch (tile) {
       case 'G': {
-        const ground = new Ground(
-          x,
-          y + this.tileSize,
-          this.tileSize,
-          this.tileSize,
-          this.canvasHelper
-        );
+        const ground = new Ground(x, y, this.tileSize, this.tileSize, this.canvasHelper);
 
         this.platforms.push(ground);
         ground.draw();
@@ -109,13 +103,7 @@ export class MapGenerator {
       }
 
       case 'L': {
-        const lava = new Lava(
-          x,
-          y + this.tileSize,
-          this.tileSize,
-          this.tileSize,
-          this.canvasHelper
-        );
+        const lava = new Lava(x, y, this.tileSize, this.tileSize, this.canvasHelper);
 
         this.lavas.push(lava);
         lava.draw();
@@ -123,13 +111,7 @@ export class MapGenerator {
       }
 
       case 'P': {
-        const platform = new Platform(
-          x,
-          y + this.tileSize,
-          this.tileSize,
-          this.tileSize,
-          this.canvasHelper
-        );
+        const platform = new Platform(x, y, this.tileSize, this.tileSize, this.canvasHelper);
 
         this.platforms.push(platform);
         platform.draw();

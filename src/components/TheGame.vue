@@ -35,8 +35,10 @@ function animate(time: number) {
   }
 
   if (ball.value?.isDead()) {
-    showRestartScreen.value = true;
-    return;
+    if (ball.value.isDeathAnimationFinished()) {
+      showRestartScreen.value = true;
+      return;
+    }
   }
 
   const deltaTime = time - lastTime;
@@ -54,7 +56,7 @@ onMounted(() => {
 
   generator = new MapGenerator(canvasHelper, map1);
 
-  ball.value = new Player(canvasHelper, 100, canvasHelper.getHeight() - 100, 25, 'blue');
+  ball.value = new Player(canvasHelper, 100, canvasHelper.getHeight() - 100, 25);
 
   const keys: { [key: string]: boolean } = {};
 

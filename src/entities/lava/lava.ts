@@ -8,20 +8,34 @@ export class Lava extends AbstractCell {
 
   private canvasHelper: CanvasHelper;
 
+  private sprite: HTMLImageElement = new Image();
+
   constructor(x: number, y: number, width: number, height: number, canvasHelper: CanvasHelper) {
     super('Lava', false, x, y, 'orange');
     this.width = width;
     this.height = height;
     this.canvasHelper = canvasHelper;
+    this.loadSprite();
   }
 
-  interact(): void {
-    // player.takeDamage(10); // Наносим урон
-    // console.log('Player has DAMAGE!');
+  private async loadSprite() {
+    this.sprite = new Image();
+    this.sprite.src = '/sprites/lava/lava.png';
+    await new Promise((resolve) => {
+      this.sprite.onload = resolve;
+    });
   }
+
+  interact(): void {}
 
   draw(): void {
-    this.canvasHelper.setFillColor(this.color);
-    this.canvasHelper.drawRectangle(this.x, this.y, this.width, this.height);
+    if (this.sprite) {
+      this.canvasHelper
+        .getContext()
+        .drawImage(this.sprite, this.x, this.y, this.width, this.height);
+    } else {
+      this.canvasHelper.setFillColor(this.color);
+      this.canvasHelper.drawRectangle(this.x, this.y, this.width, this.height);
+    }
   }
 }

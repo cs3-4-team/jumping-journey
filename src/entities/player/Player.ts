@@ -3,8 +3,39 @@ import { Vector } from '@/shared/vector/Vector';
 import type { Lava } from '../lava';
 import type { Platform } from '../platform';
 import type { Ground } from '../ground';
+import { PlayerState } from './PlayerState';
 
 export default class Player {
+  private width: number = 64;
+
+  private height: number = 64;
+
+  private state: PlayerState = PlayerState.IDLE;
+
+  private sprites: { [key in PlayerState]: HTMLImageElement } = {} as any;
+
+  private deathFrame: number = 0;
+
+  private deathAnimationSpeed: number = 150; // миллисекунды
+
+  private lastDeathFrameUpdate: number = 0;
+
+  private isDeathAnimationComplete: boolean = false;
+
+  private lastAnimationUpdate: number = 0;
+
+  private walkAnimationSpeed: number = 150;
+
+  private currentWalkFrame: number = 1;
+
+  private direction: number = 1;
+
+  private jumpFrame: number = 1;
+
+  private jumpAnimationSpeed: number = 100;
+
+  private lastJumpFrameUpdate: number = 0;
+
   private velocity: Vector;
 
   private gravity: number;
@@ -19,12 +50,15 @@ export default class Player {
 
   private isDead_: boolean = false;
 
+  isDeathAnimationFinished(): boolean {
+    return this.isDeathAnimationComplete;
+  }
+
   constructor(
     private canvasHelper: CanvasHelper,
     private x: number,
     private y: number,
-    private radius: number,
-    private color: string
+    private radius: number
   ) {
     this.velocity = new Vector();
     this.gravity = 0.31;
@@ -33,11 +67,96 @@ export default class Player {
     this.isDead_ = false;
     this.onPlatform = false;
     this.friction = 0.93;
+    this.loadSprites();
+  }
+
+  private async loadSprites() {
+    const states = Object.values(PlayerState);
+
+    for (const state of states) {
+      const sprite = new Image();
+
+      sprite.src = `/sprites/player/${state}.png`;
+      await new Promise((resolve) => {
+        sprite.onload = resolve;
+      });
+      this.sprites[state] = sprite;
+    }
   }
 
   draw() {
-    this.canvasHelper.setFillColor(this.color);
-    this.canvasHelper.drawCircle(this.x, this.y, this.radius);
+    const currentSprite = this.sprites[this.state];
+
+    if (this.isDead_ && !this.isDeathAnimationComplete) {
+      const now = performance.now();
+
+      if (now - this.lastDeathFrameUpdate > this.deathAnimationSpeed) {
+        this.deathFrame++;
+        this.lastDeathFrameUpdate = now;
+
+        if (this.deathFrame <= 4) {
+          const deathState = `DEAD_${this.deathFrame}` as keyof typeof PlayerState;
+
+          this.state = PlayerState[deathState];
+        } else {
+          this.isDeathAnimationComplete = true;
+        }
+      }
+    } else if (!this.isDead_) {
+      // Логика анимации движения
+      if (Math.abs(this.velocity.x) > 0 && this.onPlatform) {
+        const now = performance.now();
+
+        if (now - this.lastAnimationUpdate > this.walkAnimationSpeed) {
+          this.currentWalkFrame = (this.currentWalkFrame % 5) + 1;
+
+          const walkState = `WALK_${this.currentWalkFrame}` as keyof typeof PlayerState;
+
+          this.state = PlayerState[walkState];
+          this.lastAnimationUpdate = now;
+          this.direction = this.velocity.x > 0 ? 1 : -1;
+        }
+      } else if (this.isJumping) {
+        const now = performance.now();
+
+        if (now - this.lastJumpFrameUpdate > this.jumpAnimationSpeed) {
+          // В начале прыжка
+          if (this.velocity.y < 0 && this.jumpFrame < 3) {
+            this.jumpFrame++;
+          }
+          // В верхней точке прыжка
+          else if (this.velocity.y > -2 && this.velocity.y < 2 && this.jumpFrame < 4) {
+            this.jumpFrame = 3;
+          }
+          // При падении
+          else if (this.velocity.y > 2 && this.jumpFrame < 5) {
+            this.jumpFrame = 4;
+          }
+          // При быстром падении
+          else if (this.velocity.y > 5) {
+            this.jumpFrame = 5;
+          }
+
+          const jumpState = `JUMP_${this.jumpFrame}` as keyof typeof PlayerState;
+
+          this.state = PlayerState[jumpState];
+          this.lastJumpFrameUpdate = now;
+        }
+      } else {
+        this.state = PlayerState.IDLE;
+      }
+    }
+
+    if (currentSprite) {
+      this.canvasHelper.getContext().save();
+      this.canvasHelper
+        .getContext()
+        .translate(this.x + (this.direction === -1 ? this.width : 0), this.y - this.height / 2);
+      this.canvasHelper.getContext().scale(this.direction, 1);
+
+      this.canvasHelper.getContext().drawImage(currentSprite, 0, 0, this.width, this.height);
+      this.canvasHelper.getContext().restore();
+    }
   }
 
   resetPosition() {
@@ -48,6 +167,9 @@ export default class Player {
     this.isJumping = false;
     this.onPlatform = false;
     this.isDead_ = false;
+    this.deathFrame = 0;
+    this.isDeathAnimationComplete = false;
+    this.state = PlayerState.IDLE;
   }
 
   private checkPlatformCollisions(platforms: Array<Ground | Platform>) {
@@ -125,6 +247,7 @@ export default class Player {
           this.y = platform.y - this.radius;
           this.velocity.y = 0;
           this.isJumping = false;
+
           this.onPlatform = true;
           this.velocity.x *= this.friction;
 
@@ -172,6 +295,7 @@ export default class Player {
     if (this.onPlatform) {
       this.velocity.y = -8;
       this.isJumping = true;
+      this.jumpFrame = 1;
     }
   }
 
