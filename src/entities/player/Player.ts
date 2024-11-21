@@ -3,7 +3,7 @@ import { Vector } from '@/shared/vector/Vector';
 import type { Lava } from '../lava';
 import type { Platform } from '../platform';
 import type { Ground } from '../ground';
-import { PlayerState } from './PlayerState';
+import { PlayerState } from './enums';
 
 export default class Player {
   private width: number = 64;
@@ -16,7 +16,7 @@ export default class Player {
 
   private deathFrame: number = 0;
 
-  private deathAnimationSpeed: number = 150; // миллисекунды
+  private deathAnimationSpeed: number = 150; // ms
 
   private lastDeathFrameUpdate: number = 0;
 
@@ -76,7 +76,7 @@ export default class Player {
     for (const state of states) {
       const sprite = new Image();
 
-      sprite.src = `/sprites/player/${state}.png`;
+      sprite.src = `src/assets/sprites/player/${state}.png`;
       await new Promise((resolve) => {
         sprite.onload = resolve;
       });
@@ -103,7 +103,7 @@ export default class Player {
         }
       }
     } else if (!this.isDead_) {
-      // Логика анимации движения
+      // Movement animation
       if (Math.abs(this.velocity.x) > 0 && this.onPlatform) {
         const now = performance.now();
 
@@ -120,19 +120,19 @@ export default class Player {
         const now = performance.now();
 
         if (now - this.lastJumpFrameUpdate > this.jumpAnimationSpeed) {
-          // В начале прыжка
+          // At the beginning of the jump
           if (this.velocity.y < 0 && this.jumpFrame < 3) {
             this.jumpFrame++;
           }
-          // В верхней точке прыжка
+          // At the top of the jump
           else if (this.velocity.y > -2 && this.velocity.y < 2 && this.jumpFrame < 4) {
             this.jumpFrame = 3;
           }
-          // При падении
+          // When falling
           else if (this.velocity.y > 2 && this.jumpFrame < 5) {
             this.jumpFrame = 4;
           }
-          // При быстром падении
+          // With a rapid fall
           else if (this.velocity.y > 5) {
             this.jumpFrame = 5;
           }
@@ -180,7 +180,7 @@ export default class Player {
         this.x + this.radius > platform.x &&
         this.x - this.radius < platform.x + platform.width
       ) {
-        // Определяем направление коллизии
+        // Determine the direction of the collision
         const fromTop = this.y - this.radius <= platform.y;
 
         if (fromTop) {
@@ -195,7 +195,7 @@ export default class Player {
 
   update(platforms: Array<Ground | Platform>, lavas: Lava[], deltaTime: number) {
     for (const lava of lavas) {
-      // Проверяем пересечение окружности с прямоугольником
+      // Check the intersection of the circle with the rectangle
       const closestX = Math.max(
         lava.getPosition().x,
         Math.min(this.x, lava.getPosition().x + lava.width)
@@ -205,12 +205,12 @@ export default class Player {
         Math.min(this.y, lava.getPosition().y + lava.height)
       );
 
-      // Вычисляем расстояние от центра шарика до ближайшей точки прямоугольника
+      // Calculate the distance from the center of the ball to the nearest point of the rectangle
       const distanceX = this.x - closestX;
       const distanceY = this.y - closestY;
       const distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
-      // Если расстояние меньше радиуса - есть коллизия
+      // If the distance is less than the radius, there is a collision
       if (distanceSquared <= this.radius * this.radius) {
         this.isDead_ = true;
 

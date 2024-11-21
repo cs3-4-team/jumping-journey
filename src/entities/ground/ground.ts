@@ -20,7 +20,7 @@ export class Ground extends AbstractCell {
 
   private async loadSprite() {
     this.sprite = new Image();
-    this.sprite.src = '/sprites/ground/ground.png';
+    this.sprite.src = 'src/assets/sprites/ground/ground.png';
     await new Promise((resolve) => {
       this.sprite.onload = resolve;
     });

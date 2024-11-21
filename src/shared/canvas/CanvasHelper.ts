@@ -101,26 +101,9 @@ export class CanvasHelper {
   resizeCanvas(): void {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-
-    // console.log('window.innerWidth', window.innerWidth);
-    // console.log('window.innerHeight', window.innerHeight);
   }
 
   getContext(): CanvasRenderingContext2D {
     return this.context;
   }
 }
-
-// Usage example:
-// const canvasHelper = new CanvasHelper('myCanvas');
-
-// canvasHelper.clearCanvas();
-// canvasHelper.setFillColor('red');
-// canvasHelper.drawRectangle(10, 10, 100, 50);
-// canvasHelper.setFillColor('blue');
-// canvasHelper.drawCircle(150, 75, 30);
-// canvasHelper.setStrokeColor('green');
-// canvasHelper.setLineWidth(2);
-// canvasHelper.drawLine(200, 200, 300, 300);
-// canvasHelper.drawText('Hello, Canvas!', 50, 50);
-// canvasHelper.drawImage('path/to/image.jpg', 100, 100, 50, 50);

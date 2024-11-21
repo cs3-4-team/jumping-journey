@@ -20,7 +20,7 @@ export class Platform extends AbstractCell {
 
   private async loadSprite() {
     this.sprite = new Image();
-    this.sprite.src = '/sprites/platform/platform.png';
+    this.sprite.src = 'src/assets/sprites/platform/platform.png';
     await new Promise((resolve) => {
       this.sprite.onload = resolve;
     });

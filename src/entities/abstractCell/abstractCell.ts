@@ -21,7 +21,7 @@ export abstract class AbstractCell {
 
   draw(canvasHelper: CanvasHelper) {
     canvasHelper.setFillColor(this.color);
-    canvasHelper.drawRectangle(this.x, this.y, 50, 50); // Заменить размеры клеток на переменные
+    canvasHelper.drawRectangle(this.x, this.y, 50, 50);
   }
 
   getType(): string {

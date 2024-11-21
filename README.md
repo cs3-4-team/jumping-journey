@@ -1,18 +1,30 @@
-# Jumping Journey
+# 2D Platformer Game «Jumping Journey»
 
-## Recommended IDE Setup
+## Description
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Welcome to our 2D Platformer Game! In this exciting adventure, you control a character who must jump on platforms and avoid falling into the deadly lava. If the character touches the lava, it's game over! The goal is to reach the coin at the end of each level to progress to the next one.
 
-## Type Support for `.vue` Imports in TS
+## Features
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Challenging Levels: Navigate through increasingly difficult levels filled with platforms and obstacles.
+Lava Hazards: Avoid the lava at all costs to stay alive.
+Collect Coins: Reach the coin at the end of each level to advance.
+Smooth Controls: Enjoy responsive and intuitive controls for a seamless gaming experience.
 
-## Customize configuration
+## Technologies used
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+TypeScript: For robust and type-safe code.  
+Vue 3: To build a reactive and component-based game interface.  
+HTML5: For the game structure and canvas rendering.  
+CSS3: To style the game and create engaging visuals.
 
-## Project Setup
+## How to Play
+
+1. Use the arrow keys to move your character left, right and jump.
+2. Avoid falling into the lava.
+3. Reach the coin to complete the level and move on to the next one.
+
+## Installation
 
 ```sh
 npm install

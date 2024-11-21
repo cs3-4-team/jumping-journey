@@ -20,7 +20,7 @@ export class Lava extends AbstractCell {
 
   private async loadSprite() {
     this.sprite = new Image();
-    this.sprite.src = '/sprites/lava/lava.png';
+    this.sprite.src = 'src/assets/sprites/lava/lava.png';
     await new Promise((resolve) => {
       this.sprite.onload = resolve;
     });
