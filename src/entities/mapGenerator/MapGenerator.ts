@@ -3,6 +3,7 @@ import { Ground } from '../ground';
 import { Lava } from '../lava';
 import { Platform } from '../platform';
 import { blockSize } from './mapGenerator.const';
+import { Coin } from '../coin';
 
 export class MapGenerator {
   private canvasHelper;
@@ -95,15 +96,41 @@ export class MapGenerator {
   private drawTile(tile: string, x: number, y: number) {
     switch (tile) {
       case 'G': {
-        const ground = new Ground(x, y, this.tileSize, this.tileSize, this.canvasHelper);
+        const ground = new Ground(
+          x,
+          y + this.tileSize,
+          this.tileSize,
+          this.tileSize,
+          this.canvasHelper
+        );
 
         this.platforms.push(ground);
         ground.draw();
         break;
       }
 
+      case 'C': {
+        const coin = new Coin(
+          x,
+          y + this.tileSize,
+          this.tileSize,
+          this.tileSize,
+          this.canvasHelper
+        );
+
+        this.platforms.push(coin);
+        coin.draw();
+        break;
+      }
+
       case 'L': {
-        const lava = new Lava(x, y, this.tileSize, this.tileSize, this.canvasHelper);
+        const lava = new Lava(
+          x,
+          y + this.tileSize,
+          this.tileSize,
+          this.tileSize,
+          this.canvasHelper
+        );
 
         this.lavas.push(lava);
         lava.draw();
@@ -111,7 +138,13 @@ export class MapGenerator {
       }
 
       case 'P': {
-        const platform = new Platform(x, y, this.tileSize, this.tileSize, this.canvasHelper);
+        const platform = new Platform(
+          x,
+          y + this.tileSize,
+          this.tileSize,
+          this.tileSize,
+          this.canvasHelper
+        );
 
         this.platforms.push(platform);
         platform.draw();
