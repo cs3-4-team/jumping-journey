@@ -1,5 +1,5 @@
 import { AbstractCell } from '../abstractCell';
-import { CanvasHelper } from '@/shared/canvas/CanvasHelper';
+import { CanvasHelper } from '@/shared/canvas';
 
 export class Lava extends AbstractCell {
   public width: number;
@@ -12,6 +12,7 @@ export class Lava extends AbstractCell {
 
   constructor(x: number, y: number, width: number, height: number, canvasHelper: CanvasHelper) {
     super('Lava', false, x, y, 'orange');
+
     this.width = width;
     this.height = height;
     this.canvasHelper = canvasHelper;
@@ -20,7 +21,7 @@ export class Lava extends AbstractCell {
 
   private async loadSprite() {
     this.sprite = new Image();
-    this.sprite.src = 'src/assets/sprites/lava/lava.png';
+    this.sprite.src = 'src/assets/sprites/lava/lava.jpg';
     await new Promise((resolve) => {
       this.sprite.onload = resolve;
     });

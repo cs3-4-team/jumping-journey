@@ -5,7 +5,15 @@ import PauseWindow from '../PauseWindow.vue';
 
 describe('HelloWorld', () => {
   it('renders properly', () => {
-    const wrapper = mount(PauseWindow, { props: { msg: 'Pause' } });
+    const wrapper = mount(PauseWindow, {
+      props: {
+        data: {
+          msg: 'Pause',
+          handler: () => {},
+          btnText: 'Continue'
+        }
+      }
+    });
 
     expect(wrapper.text()).toContain('Pause');
   });

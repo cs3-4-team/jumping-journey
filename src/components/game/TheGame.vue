@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, reactive, watch } from 'vue';
-import { CanvasHelper } from '@/shared/canvas/CanvasHelper';
-import { MapGenerator, map1 } from '@/entities/mapGenerator';
-import type { PauseWinData } from './interfaces';
-import Player from '@/entities/player/Player';
+import { CanvasHelper } from '@/shared/canvas';
+import { MapGenerator, map1, map2 } from '@/entities/mapGenerator';
+import { Player } from '@/entities/player';
 import PauseWindow from '@/components/PauseWindow.vue';
+import type { PauseWinData } from './interfaces';
 
 const isDead = ref(false);
 const isPaused = ref(false);
+const isLevelCompleted = ref(false);
+const level = ref(map1);
 const player = ref<Player | null>(null);
 const keys: { [key: string]: boolean } = {};
 let animateFrame: number | null = null;
@@ -18,7 +20,8 @@ let pauseWinData: PauseWinData;
 
 const gameState = reactive({
   isPaused,
-  isDead
+  isDead,
+  isLevelCompleted
 });
 
 watch(
@@ -35,6 +38,12 @@ watch(
         msg: 'Oooops...',
         handler: handleRestart,
         btnText: 'Restart'
+      };
+    } else if (state.isLevelCompleted) {
+      pauseWinData = {
+        msg: 'Well done, fren👏',
+        handler: handleRestart,
+        btnText: 'Next level'
       };
     }
   },
@@ -115,7 +124,7 @@ function handleKeyup(e: { code: string | number }) {
 onMounted(() => {
   canvasHelper = new CanvasHelper('gameCanvas');
 
-  generator = new MapGenerator(canvasHelper, map1);
+  generator = new MapGenerator(canvasHelper, level.value);
 
   player.value = new Player(canvasHelper, 100, canvasHelper.getHeight() - 100, 25);
 
@@ -139,7 +148,7 @@ onBeforeUnmount(() => {
   <div class="gameContainer">
     <canvas id="gameCanvas"></canvas>
     <transition name="fade">
-      <PauseWindow v-if="isDead || isPaused" :data="pauseWinData" />
+      <PauseWindow v-if="isDead || isPaused || isLevelCompleted" :data="pauseWinData" />
     </transition>
   </div>
 </template>
@@ -151,7 +160,7 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  /* background-image: url('src/assets/background.png');
-  background-repeat: no-repeat; */
+  background-image: url('src/assets/background.png');
+  background-size: cover;
 }
 </style>

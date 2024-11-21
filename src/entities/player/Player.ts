@@ -1,11 +1,11 @@
-import type { CanvasHelper } from '@/shared/canvas/CanvasHelper';
-import { Vector } from '@/shared/vector/Vector';
+import type { CanvasHelper } from '@/shared/canvas';
+import { Vector } from '@/shared/vector';
 import type { Lava } from '../lava';
 import type { Platform } from '../platform';
 import type { Ground } from '../ground';
 import { PlayerState } from './enums';
 
-export default class Player {
+export class Player {
   private width: number = 64;
 
   private height: number = 64;

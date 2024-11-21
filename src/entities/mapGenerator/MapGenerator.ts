@@ -1,7 +1,8 @@
-import type { CanvasHelper } from '@/shared/canvas/CanvasHelper';
+import type { CanvasHelper } from '@/shared/canvas';
 import { Ground } from '../ground';
 import { Lava } from '../lava';
 import { Platform } from '../platform';
+import { Coin } from '../coin';
 import { blockSize } from './mapGenerator.const';
 
 export class MapGenerator {
@@ -14,6 +15,8 @@ export class MapGenerator {
   lavas: Array<Lava> = [];
 
   platforms: Array<Platform | Ground> = [];
+
+  coins: Array<Coin> = [];
 
   constructor(canvasHelper: CanvasHelper, mapData: string[]) {
     this.canvasHelper = canvasHelper;
@@ -122,6 +125,20 @@ export class MapGenerator {
 
         this.platforms.push(platform);
         platform.draw();
+        break;
+      }
+
+      case 'C': {
+        const coin = new Coin(
+          x,
+          y + this.tileSize,
+          this.tileSize,
+          this.tileSize,
+          this.canvasHelper
+        );
+
+        this.coins.push(coin);
+        coin.draw();
         break;
       }
 

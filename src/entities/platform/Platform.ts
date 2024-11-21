@@ -1,5 +1,5 @@
 import { AbstractCell } from '../abstractCell';
-import { CanvasHelper } from '@/shared/canvas/CanvasHelper';
+import { CanvasHelper } from '@/shared/canvas';
 
 export class Platform extends AbstractCell {
   public width: number;
@@ -12,6 +12,7 @@ export class Platform extends AbstractCell {
 
   constructor(x: number, y: number, width: number, height: number, canvasHelper: CanvasHelper) {
     super('Platform', false, x, y, 'gray');
+
     this.width = width;
     this.height = height;
     this.canvasHelper = canvasHelper;
@@ -20,7 +21,7 @@ export class Platform extends AbstractCell {
 
   private async loadSprite() {
     this.sprite = new Image();
-    this.sprite.src = 'src/assets/sprites/platform/platform.png';
+    this.sprite.src = 'src/assets/sprites/platform/platform.jpg';
     await new Promise((resolve) => {
       this.sprite.onload = resolve;
     });
