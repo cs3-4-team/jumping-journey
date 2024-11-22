@@ -1,4 +1,4 @@
-export const map1 = [
+const map1 = [
   '..........................C....',
   '..........................P....',
   '....................P..........',
@@ -12,7 +12,7 @@ export const map1 = [
   'GGGGGGGGGGGLLLLGGGGLLLGGGGGGGGG'
 ];
 
-export const map2 = [
+const map2 = [
   '...................LLL.LLL.LLL.',
   '...................L...L.....L.',
   '...................L...LLL.LLL.',
@@ -27,4 +27,5 @@ export const map2 = [
   'GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG'
 ];
 
+export const levels = [map1, map2];
 export const blockSize = 50;

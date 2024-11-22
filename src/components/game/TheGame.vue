@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, reactive, watch, computed } from 'vue';
 import { CanvasHelper } from '@/shared/canvas';
-import { MapGenerator } from '@/entities/mapGenerator';
+import { MapGenerator, levels } from '@/entities/mapGenerator';
 import { Player } from '@/entities/player';
-import { levels } from './consts';
 import PauseWindow from '@/components/PauseWindow.vue';
 import type { PauseWinData } from './interfaces';
 
