@@ -86,8 +86,21 @@ function animate(time: number) {
   const deltaTime = time - lastTime;
 
   lastTime = time;
-  player.value?.update(generator.platforms, generator.lavas, generator.coins, deltaTime);
+
+  const levelComplete = player.value?.update(
+    generator.platforms,
+    generator.lavas,
+    generator.coins,
+    deltaTime
+  );
+
+  if (levelComplete) {
+    isLevelCompleted.value = true;
+    return;
+  }
+
   player.value?.draw();
+  player.value?.drawDebugInfo();
   animateFrame = requestAnimationFrame(animate);
 }
 

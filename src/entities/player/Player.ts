@@ -87,6 +87,21 @@ export class Player {
     }
   }
 
+  public drawDebugInfo() {
+    const ctx = this.canvasHelper.getContext();
+
+    // Draw hitbox
+    ctx.strokeStyle = 'rgba(0,255,0,0.5)';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Draw coordinates
+    ctx.fillStyle = 'blue';
+    ctx.font = '12px Arial';
+    ctx.fillText(`x:${Math.round(this.x)},y:${Math.round(this.y)}`, this.x - 30, this.y - 20);
+  }
+
   draw() {
     const currentSprite = this.sprites[this.state];
 
@@ -201,6 +216,20 @@ export class Player {
     });
   }
 
+  private checkCoinCollisions(coins: Array<Coin>): boolean {
+    for (const coin of coins) {
+      const distanceX = this.x - (coin.x + coin.width / 2);
+      const distanceY = this.y - (coin.y + coin.height / 2);
+      const distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+      if (distanceSquared <= this.radius * this.radius) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   update(
     platforms: Array<Ground | Platform>,
     lavas: Array<Lava>,
@@ -227,9 +256,13 @@ export class Player {
       if (distanceSquared <= this.radius * this.radius) {
         this.isDead_ = true;
 
-        this.checkPlatformCollisions(platforms);
+        //this.checkPlatformCollisions(platforms);
         return;
       }
+    }
+
+    if (this.checkCoinCollisions(coins)) {
+      return true; // Level passed
     }
 
     const deltaSeconds = deltaTime / 20;
