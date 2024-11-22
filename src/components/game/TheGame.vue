@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, reactive, watch, computed } from 'vue';
 import { CanvasHelper } from '@/shared/canvas';
-import { MapGenerator, map1, map2 } from '@/entities/mapGenerator';
+import { MapGenerator } from '@/entities/mapGenerator';
 import { Player } from '@/entities/player';
+import { levels } from './consts';
 import PauseWindow from '@/components/PauseWindow.vue';
 import type { PauseWinData } from './interfaces';
 
 const isDead = ref(false);
 const isPaused = ref(false);
 const isLevelCompleted = ref(false);
-const level = ref(map1);
 const player = ref<Player | null>(null);
 const keys: { [key: string]: boolean } = {};
 let animateFrame: number | null = null;
 let generator: MapGenerator;
 let lastTime = 0;
 let pauseWinData: PauseWinData;
+let sceneCanvasHelper: CanvasHelper;
+let personCanvasHelper: CanvasHelper;
+let level = 0;
 
 const isGameStopped = computed(() => isDead.value || isPaused.value || isLevelCompleted.value);
 
@@ -38,14 +41,20 @@ watch(
       pauseWinData = {
         msg: 'Oooops...',
         handler: handleRestart,
-        btnText: 'Restart'
+        btnText: 'Try again'
       };
     } else if (state.isLevelCompleted) {
       pauseWinData = {
         msg: 'Well done, fren👏',
-        handler: handleRestart,
+        handler: handleNewLevel,
         btnText: 'Next level'
       };
+
+      if (level >= levels.length - 1) {
+        level = 0;
+      } else {
+        level++;
+      }
     }
   },
   { deep: true }
@@ -67,6 +76,21 @@ function handleRestart() {
 
 function handlePause() {
   isPaused.value = !isPaused.value;
+}
+
+function handleNewLevel() {
+  isLevelCompleted.value = false;
+  drawMap(sceneCanvasHelper);
+
+  player.value?.resetPosition();
+  lastTime = 0;
+  player.value?.update(generator.platforms, generator.lavas, generator.coins, 16.67);
+
+  if (animateFrame) {
+    cancelAnimationFrame(animateFrame);
+  }
+
+  animate(performance.now());
 }
 
 function animate(time: number) {
@@ -100,7 +124,7 @@ function animate(time: number) {
   }
 
   player.value?.draw();
-  player.value?.drawDebugInfo();
+  // player.value?.drawDebugInfo();
   animateFrame = requestAnimationFrame(animate);
 }
 
@@ -146,18 +170,20 @@ function removeListeners() {
   window.removeEventListener('keydown', handleKeyup);
 }
 
-onMounted(() => {
-  const sceneCanvasHelper = new CanvasHelper('sceneCanvas');
-  const personCanvasHelper = new CanvasHelper('personCanvas');
-
-  // Draw map
-  generator = new MapGenerator(sceneCanvasHelper, level.value);
+function drawMap(canvasHelper: CanvasHelper) {
+  canvasHelper.clearCanvas();
+  generator && generator.stopAnimation(); // It's nessesary, because started animations appear again
+  generator = new MapGenerator(canvasHelper, levels[level]);
   generator.generateMap();
+}
+
+onMounted(() => {
+  sceneCanvasHelper = new CanvasHelper('sceneCanvas');
+  personCanvasHelper = new CanvasHelper('personCanvas');
 
   player.value = new Player(personCanvasHelper, 100, personCanvasHelper.getHeight() - 200, 25);
-
-  // Add keypress listeners
-  addListeners();
+  drawMap(sceneCanvasHelper);
+  addListeners(); // Add keypress listeners
   animate(performance.now());
 });
 

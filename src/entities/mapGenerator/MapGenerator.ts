@@ -41,8 +41,8 @@ export class MapGenerator {
         const schemaColsToAdd = canvasColBlocksCount - normalizedSchema[i].length;
         const emptyBlocksToAdd =
           i === normalizedSchema.length - 1
-            ? 'G'.repeat(schemaColsToAdd)
-            : '.'.repeat(schemaColsToAdd);
+            ? 'G'.repeat(schemaColsToAdd) // If the first row - draw ground
+            : '.'.repeat(schemaColsToAdd); // Else - empty block '.'
 
         normalizedSchema[i] += emptyBlocksToAdd;
       } else if (normalizedSchema[i].length > canvasColBlocksCount) {
@@ -71,6 +71,10 @@ export class MapGenerator {
         this.drawTile(tile, x, y);
       });
     });
+  }
+
+  stopAnimation() {
+    this.coins.forEach((coin) => coin.stopAnimation());
   }
 
   private calculateTileSize(): number {

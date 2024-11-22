@@ -17,6 +17,8 @@ export class Coin extends AbstractCell {
 
   private lastFrameTime = 0;
 
+  private requestAnimationId = 0;
+
   constructor(x: number, y: number, width: number, height: number, canvasHelper: CanvasHelper) {
     super('coin', false, x, y, 'gold');
 
@@ -26,7 +28,7 @@ export class Coin extends AbstractCell {
   }
 
   private startAnimation() {
-    requestAnimationFrame(this.animate.bind(this));
+    this.requestAnimationId = requestAnimationFrame(this.animate.bind(this));
   }
 
   private animate(timestamp: number) {
@@ -46,7 +48,7 @@ export class Coin extends AbstractCell {
       this.lastFrameTime = timestamp;
     }
 
-    requestAnimationFrame(this.animate.bind(this));
+    this.requestAnimationId = requestAnimationFrame(this.animate.bind(this));
   }
 
   draw() {
@@ -65,5 +67,11 @@ export class Coin extends AbstractCell {
         }
       };
     });
+  }
+
+  stopAnimation() {
+    if (this.requestAnimationId) {
+      cancelAnimationFrame(this.requestAnimationId);
+    }
   }
 }
