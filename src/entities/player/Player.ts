@@ -135,7 +135,7 @@ export class Player {
           this.lastAnimationUpdate = now;
           this.direction = this.velocity.x > 0 ? 1 : -1;
         }
-      } else if (this.isJumping) {
+      } else if (this.isJumping || this.velocity.y > 2) {
         const now = performance.now();
 
         if (now - this.lastJumpFrameUpdate > this.jumpAnimationSpeed) {
