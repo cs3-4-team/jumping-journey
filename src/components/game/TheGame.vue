@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref, reactive, watch } from 'vue';
+import { onMounted, onBeforeUnmount, ref, reactive, watch, computed } from 'vue';
 import { CanvasHelper } from '@/shared/canvas';
 import { MapGenerator, map1, map2 } from '@/entities/mapGenerator';
 import { Player } from '@/entities/player';
@@ -13,10 +13,11 @@ const level = ref(map1);
 const player = ref<Player | null>(null);
 const keys: { [key: string]: boolean } = {};
 let animateFrame: number | null = null;
-let canvasHelper: CanvasHelper;
 let generator: MapGenerator;
 let lastTime = 0;
 let pauseWinData: PauseWinData;
+
+const isGameStopped = computed(() => isDead.value || isPaused.value || isLevelCompleted.value);
 
 const gameState = reactive({
   isPaused,
@@ -55,7 +56,7 @@ function handleRestart() {
   player.value?.resetPosition();
   lastTime = 0;
 
-  player.value?.update(generator.platforms, generator.lavas, 16.67);
+  player.value?.update(generator.platforms, generator.lavas, generator.coins, 16.67);
 
   if (animateFrame) {
     cancelAnimationFrame(animateFrame);
@@ -85,10 +86,8 @@ function animate(time: number) {
   const deltaTime = time - lastTime;
 
   lastTime = time;
-  canvasHelper.clearCanvas();
-  player.value?.update(generator.platforms, generator.lavas, deltaTime);
+  player.value?.update(generator.platforms, generator.lavas, generator.coins, deltaTime);
   player.value?.draw();
-  generator.generateMap();
   animateFrame = requestAnimationFrame(animate);
 }
 
@@ -97,6 +96,8 @@ function handleKeydown(e: { key: string; code: string | number }) {
     handlePause();
     return;
   }
+
+  if (isGameStopped.value) return;
 
   keys[e.code] = true;
 
@@ -121,46 +122,61 @@ function handleKeyup(e: { code: string | number }) {
   }
 }
 
-onMounted(() => {
-  canvasHelper = new CanvasHelper('gameCanvas');
+function addListeners() {
+  window.addEventListener('keydown', handleKeydown);
+  window.addEventListener('keyup', handleKeyup);
+  // window.addEventListener('resize', sceneCanvasHelper.resizeCanvas);
+}
 
-  generator = new MapGenerator(canvasHelper, level.value);
-
-  player.value = new Player(canvasHelper, 100, canvasHelper.getHeight() - 100, 25);
-
-  addListeners();
-  animate(performance.now());
-
-  function addListeners() {
-    window.addEventListener('keydown', handleKeydown);
-    window.addEventListener('keyup', handleKeyup);
-    // window.addEventListener('resize', canvasHelper.resizeCanvas);
-  }
-});
-
-onBeforeUnmount(() => {
+function removeListeners() {
   window.removeEventListener('keydown', handleKeydown);
   window.removeEventListener('keydown', handleKeyup);
+}
+
+onMounted(() => {
+  const sceneCanvasHelper = new CanvasHelper('sceneCanvas');
+  const personCanvasHelper = new CanvasHelper('personCanvas');
+
+  // Draw map
+  generator = new MapGenerator(sceneCanvasHelper, level.value);
+  generator.generateMap();
+
+  player.value = new Player(personCanvasHelper, 100, personCanvasHelper.getHeight() - 200, 25);
+
+  // Add keypress listeners
+  addListeners();
+  animate(performance.now());
 });
+
+onBeforeUnmount(removeListeners);
 </script>
 
 <template>
   <div class="gameContainer">
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="sceneCanvas"></canvas>
+    <canvas id="personCanvas"></canvas>
     <transition name="fade">
-      <PauseWindow v-if="isDead || isPaused || isLevelCompleted" :data="pauseWinData" />
+      <PauseWindow v-if="isGameStopped" :data="pauseWinData" />
     </transition>
   </div>
 </template>
 
 <style scoped>
-#gameCanvas {
+.gameContainer canvas {
   position: absolute;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
+}
+
+#sceneCanvas {
   background-image: url('src/assets/background.png');
   background-size: cover;
+  z-index: 997;
+}
+
+#personCanvas {
+  z-index: 998;
 }
 </style>

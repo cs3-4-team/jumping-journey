@@ -1,5 +1,6 @@
 import { AbstractCell } from '../abstractCell';
 import { CanvasHelper } from '@/shared/canvas';
+import { coinImagesSrc } from './coin.const';
 
 export class Coin extends AbstractCell {
   public width: number;
@@ -8,9 +9,7 @@ export class Coin extends AbstractCell {
 
   private canvasHelper: CanvasHelper;
 
-  private images: Array<HTMLImageElement> = [];
-
-  private imageSources: Array<string> = ['coin1', 'coin2', 'coin3', 'coin4', 'coin5', 'coin6'];
+  private coinImages: Array<HTMLImageElement> = [];
 
   private frameRate = 200; // ms between frames
 
@@ -19,7 +18,7 @@ export class Coin extends AbstractCell {
   private lastFrameTime = 0;
 
   constructor(x: number, y: number, width: number, height: number, canvasHelper: CanvasHelper) {
-    super('Coin', false, x, y, 'gold');
+    super('coin', false, x, y, 'gold');
 
     this.width = width;
     this.height = height;
@@ -32,12 +31,16 @@ export class Coin extends AbstractCell {
 
   private animate(timestamp: number) {
     if (timestamp - this.lastFrameTime >= this.frameRate) {
-      const totalFrames = this.imageSources.length;
+      const totalFrames = coinImagesSrc.length;
 
       this.canvasHelper.getContext().clearRect(this.x, this.y, this.width, this.height);
-      this.canvasHelper
-        .getContext()
-        .drawImage(this.images[this.currentFrame], this.x, this.y, this.width, this.height);
+      this.canvasHelper.drawImage(
+        this.coinImages[this.currentFrame],
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
 
       this.currentFrame = (this.currentFrame + 1) % totalFrames;
       this.lastFrameTime = timestamp;
@@ -46,20 +49,18 @@ export class Coin extends AbstractCell {
     requestAnimationFrame(this.animate.bind(this));
   }
 
-  interact(): void {}
-
   draw() {
-    const totalFrames = this.imageSources.length;
+    const totalFrames = coinImagesSrc.length;
 
-    this.imageSources.forEach((name, i) => {
+    coinImagesSrc.forEach((coinSrc, i) => {
       const img = new Image();
 
-      img.src = `src/assets/sprites/coin/${name}.png`;
+      img.src = `${this.imagesSrc}/${coinSrc}`;
 
       img.onload = () => {
-        this.images[i] = img;
+        this.coinImages[i] = img;
 
-        if (this.images.length === totalFrames) {
+        if (this.coinImages.length === totalFrames) {
           this.startAnimation();
         }
       };

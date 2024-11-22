@@ -64,18 +64,26 @@ export class CanvasHelper {
     this.context.fillText(text, x, y);
   }
 
-  drawImage(imageSrc: string, x: number, y: number, width?: number, height?: number): void {
-    const image = new Image();
+  drawImage(
+    image: string | HTMLImageElement,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ): void {
+    const isSrc = typeof image === 'string';
 
-    image.src = imageSrc;
+    if (isSrc) {
+      const newImage = new Image();
 
-    image.onload = () => {
-      if (width && height) {
-        this.context.drawImage(image, x, y, width, height);
-      } else {
-        this.context.drawImage(image, x, y);
-      }
-    };
+      newImage.src = image;
+
+      newImage.onload = () => {
+        this.context.drawImage(newImage, x, y, width, height);
+      };
+    } else {
+      this.context.drawImage(image, x, y, width, height);
+    }
   }
 
   saveState(): void {

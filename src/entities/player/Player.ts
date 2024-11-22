@@ -3,6 +3,7 @@ import { Vector } from '@/shared/vector';
 import type { Lava } from '../lava';
 import type { Platform } from '../platform';
 import type { Ground } from '../ground';
+import type { Coin } from '../coin';
 import { PlayerState } from './enums';
 
 export class Player {
@@ -49,6 +50,8 @@ export class Player {
   private friction: number;
 
   private isDead_: boolean = false;
+
+  private savedArea: ImageData | null = null;
 
   isDeathAnimationFinished(): boolean {
     return this.isDeathAnimationComplete;
@@ -148,20 +151,25 @@ export class Player {
     }
 
     if (currentSprite) {
-      this.canvasHelper.getContext().save();
-      this.canvasHelper
-        .getContext()
-        .translate(this.x + (this.direction === -1 ? this.width : 0), this.y - this.height / 2);
-      this.canvasHelper.getContext().scale(this.direction, 1);
+      this.canvasHelper.clearCanvas();
+      this.canvasHelper.saveState();
+      this.canvasHelper.translateCanvas(this.x - this.width / 2, this.y - this.height / 2);
 
-      this.canvasHelper.getContext().drawImage(currentSprite, 0, 0, this.width, this.height);
-      this.canvasHelper.getContext().restore();
+      if (this.direction === -1) {
+        this.canvasHelper.scaleCanvas(-1, 1);
+        this.canvasHelper.translateCanvas(-this.width, 0);
+      } else {
+        this.canvasHelper.scaleCanvas(1, 1);
+      }
+
+      this.canvasHelper.drawImage(currentSprite, 0, 0, this.width, this.height);
+      this.canvasHelper.restoreState();
     }
   }
 
   resetPosition() {
     this.x = 100;
-    this.y = this.canvasHelper.getHeight() - this.radius * 10;
+    this.y = this.canvasHelper.getHeight() - 200;
     this.velocity.x = 0;
     this.velocity.y = 0;
     this.isJumping = false;
@@ -193,7 +201,12 @@ export class Player {
     });
   }
 
-  update(platforms: Array<Ground | Platform>, lavas: Lava[], deltaTime: number) {
+  update(
+    platforms: Array<Ground | Platform>,
+    lavas: Array<Lava>,
+    coins: Array<Coin>,
+    deltaTime: number
+  ) {
     for (const lava of lavas) {
       // Check the intersection of the circle with the rectangle
       const closestX = Math.max(
