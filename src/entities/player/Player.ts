@@ -61,7 +61,8 @@ export class Player {
     private canvasHelper: CanvasHelper,
     private x: number,
     private y: number,
-    private radius: number
+    private radius: number,
+    private gameKeys: { [key: string]: boolean }
   ) {
     this.velocity = new Vector();
     this.gravity = 0.31;
@@ -217,12 +218,14 @@ export class Player {
   }
 
   private checkCoinCollisions(coins: Array<Coin>): boolean {
-    for (const coin of coins) {
+    for (let i = 0; i < coins.length; i++) {
+      const coin = coins[i];
       const distanceX = this.x - (coin.x + coin.width / 2);
       const distanceY = this.y - (coin.y + coin.height / 2);
       const distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
       if (distanceSquared <= this.radius * this.radius) {
+        coins.splice(i, 1); // Remove coin after collision
         return true;
       }
     }
@@ -295,11 +298,11 @@ export class Player {
           this.isJumping = false;
 
           this.onPlatform = true;
-          this.velocity.x *= this.friction;
+          //this.velocity.x *= this.friction;
 
-          if (Math.abs(this.velocity.x) < 0.001) {
+          /*if (Math.abs(this.velocity.x) < 0.001) {
             this.velocity.x = 0;
-          }
+          }*/
         } else if (fromBottom && this.velocity.y < 0) {
           this.y = platform.y + platform.height + this.radius;
           this.velocity.y = 0;
@@ -329,10 +332,16 @@ export class Player {
     }
 
     if (!this.isJumping && this.onPlatform) {
-      this.velocity.x *= this.friction;
+      if (!this.gameKeys['ArrowLeft'] && !this.gameKeys['ArrowRight']) {
+        // Smooth deceleration
+        const sign = Math.sign(this.velocity.x);
+        const absVelocity = Math.abs(this.velocity.x);
 
-      if (Math.abs(this.velocity.x) < 0.5) {
-        this.velocity.x = 0;
+        if (absVelocity > 0) {
+          const newAbsVelocity = Math.max(0, absVelocity - 0.4);
+
+          this.velocity.x = sign * newAbsVelocity;
+        }
       }
     }
   }
@@ -345,26 +354,12 @@ export class Player {
     }
   }
 
-  moveLeft() {
-    if (!this.isJumping) {
-      this.velocity.x = -5;
-    }
-  }
-
-  moveRight() {
-    if (!this.isJumping) {
-      this.velocity.x = 5;
-    }
-  }
-
-  stop() {
-    if (!this.isJumping) {
-      this.velocity.x = 0;
-    }
-  }
-
   setVelocityX(value: number) {
     this.velocity.x = value;
+
+    if (value !== 0) {
+      this.direction = value > 0 ? 1 : -1;
+    }
   }
 
   getVelocityX(): number {

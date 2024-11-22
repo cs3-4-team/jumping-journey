@@ -137,24 +137,27 @@ function handleKeydown(e: { key: string; code: string | number }) {
 
   keys[e.code] = true;
 
-  if (keys['ArrowUp'] && keys['ArrowLeft'] && !player.value?.getIsJumping()) {
-    player.value?.setVelocityX(-5);
+  if (keys['ArrowUp'] && !player.value?.getIsJumping()) {
     player.value?.jump();
-  } else if (keys['ArrowUp'] && keys['ArrowRight'] && !player.value?.getIsJumping()) {
-    player.value?.setVelocityX(5);
-    player.value?.jump();
-  } else if (keys['ArrowLeft'] && !player.value?.getIsJumping()) {
-    player.value?.moveLeft();
-  } else if (keys['ArrowRight'] && !player.value?.getIsJumping()) {
-    player.value?.moveRight();
   }
+
+  updateMovement();
 }
 
 function handleKeyup(e: { code: string | number }) {
   keys[e.code] = false;
+  updateMovement();
+}
 
-  if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
-    player.value?.stop();
+function updateMovement() {
+  if (!player.value?.getIsJumping()) {
+    if (keys['ArrowLeft']) {
+      player.value?.setVelocityX(-5);
+    } else if (keys['ArrowRight']) {
+      player.value?.setVelocityX(5);
+    } else {
+      player.value?.setVelocityX(0);
+    }
   }
 }
 
@@ -166,7 +169,7 @@ function addListeners() {
 
 function removeListeners() {
   window.removeEventListener('keydown', handleKeydown);
-  window.removeEventListener('keydown', handleKeyup);
+  window.removeEventListener('keyup', handleKeyup);
 }
 
 function drawMap(canvasHelper: CanvasHelper) {
@@ -180,7 +183,14 @@ onMounted(() => {
   sceneCanvasHelper = new CanvasHelper('sceneCanvas');
   personCanvasHelper = new CanvasHelper('personCanvas');
 
-  player.value = new Player(personCanvasHelper, 100, personCanvasHelper.getHeight() - 200, 25);
+  player.value = new Player(
+    personCanvasHelper,
+    100,
+    personCanvasHelper.getHeight() - 200,
+    25,
+    keys
+  );
+
   drawMap(sceneCanvasHelper);
   addListeners(); // Add keypress listeners
   animate(performance.now());
