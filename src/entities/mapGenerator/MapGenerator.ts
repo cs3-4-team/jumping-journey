@@ -39,7 +39,10 @@ export class MapGenerator {
     for (let i = 0; i < normalizedSchema.length; i++) {
       if (normalizedSchema[i].length < canvasColBlocksCount) {
         const schemaColsToAdd = canvasColBlocksCount - normalizedSchema[i].length;
-        const emptyBlocksToAdd = '.'.repeat(schemaColsToAdd);
+        const emptyBlocksToAdd =
+          i === normalizedSchema.length - 1
+            ? 'G'.repeat(schemaColsToAdd)
+            : '.'.repeat(schemaColsToAdd);
 
         normalizedSchema[i] += emptyBlocksToAdd;
       } else if (normalizedSchema[i].length > canvasColBlocksCount) {
