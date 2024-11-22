@@ -218,14 +218,12 @@ export class Player {
   }
 
   private checkCoinCollisions(coins: Array<Coin>): boolean {
-    for (let i = 0; i < coins.length; i++) {
-      const coin = coins[i];
+    for (const coin of coins) {
       const distanceX = this.x - (coin.x + coin.width / 2);
       const distanceY = this.y - (coin.y + coin.height / 2);
       const distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
       if (distanceSquared <= this.radius * this.radius) {
-        coins.splice(i, 1); // Remove coin after collision
         return true;
       }
     }
