@@ -80,7 +80,7 @@ export class Player {
     for (const state of states) {
       const sprite = new Image();
 
-      sprite.src = `/sprites/player/${state}.png`;
+      sprite.src = `./sprites/player/${state}.png`;
       await new Promise((resolve) => {
         sprite.onload = resolve;
       });
