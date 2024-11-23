@@ -218,7 +218,7 @@ onBeforeUnmount(removeListeners);
 }
 
 #sceneCanvas {
-  background-image: url('src/assets/background.png');
+  background-image: url('/background.png');
   background-size: cover;
   z-index: 997;
 }

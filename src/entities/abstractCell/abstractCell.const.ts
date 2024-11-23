@@ -1,1 +1,1 @@
-export const imagesSrc = 'src/assets/sprites';
+export const imagesSrc = '/sprites';
