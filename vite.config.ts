@@ -1,6 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
 import { loadEnv } from 'vite';
-
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
@@ -19,6 +18,6 @@ export default defineConfig(({ mode }) => {
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV)
     },
-    base: mode === 'production' ? '/jumping-journey' : '' // For GitHub Pages
+    base: mode === 'production' ? '/jumping-journey/' : '/' // For GitHub Pages
   };
 });
