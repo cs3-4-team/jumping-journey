@@ -55,3 +55,9 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+### Deploy to GitHub Pages
+
+```sh
+npm run deploy
+```
