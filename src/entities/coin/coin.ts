@@ -48,6 +48,7 @@ export class Coin extends AbstractCell {
       this.lastFrameTime = timestamp;
     }
 
+    this.stopAnimation();
     this.requestAnimationId = requestAnimationFrame(this.animate.bind(this));
   }
 
