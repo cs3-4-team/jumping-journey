@@ -1,4 +1,5 @@
 # 2D Platformer Game «Jumping Journey»
+
 ![image](https://github.com/user-attachments/assets/154a05b8-494f-4cae-8ec1-1c4b3976184c)
 
 ## Description

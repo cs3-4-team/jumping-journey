@@ -296,11 +296,11 @@ export class Player {
           this.isJumping = false;
 
           this.onPlatform = true;
-          //this.velocity.x *= this.friction;
+          // this.velocity.x *= this.friction;
 
-          /*if (Math.abs(this.velocity.x) < 0.001) {
-            this.velocity.x = 0;
-          }*/
+          // if (Math.abs(this.velocity.x) < 0.001) {
+          //   this.velocity.x = 0;
+          // }
         } else if (fromBottom && this.velocity.y < 0) {
           this.y = platform.y + platform.height + this.radius;
           this.velocity.y = 0;

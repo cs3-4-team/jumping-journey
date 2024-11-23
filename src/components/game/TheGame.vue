@@ -61,16 +61,7 @@ watch(
 
 function handleRestart() {
   isDead.value = false;
-  player.value?.resetPosition();
-  lastTime = 0;
-
-  player.value?.update(generator.platforms, generator.lavas, generator.coins, 16.67);
-
-  if (animateFrame) {
-    cancelAnimationFrame(animateFrame);
-  }
-
-  animate(performance.now());
+  startLevel();
 }
 
 function handlePause() {
@@ -80,10 +71,13 @@ function handlePause() {
 function handleNewLevel() {
   isLevelCompleted.value = false;
   drawMap(sceneCanvasHelper);
+  startLevel();
+}
 
+function startLevel() {
   player.value?.resetPosition();
-  lastTime = 0;
   player.value?.update(generator.platforms, generator.lavas, generator.coins, 16.67);
+  lastTime = 0;
 
   if (animateFrame) {
     cancelAnimationFrame(animateFrame);
@@ -139,25 +133,30 @@ function handleKeydown(e: { key: string; code: string | number }) {
 
   if (keys['ArrowUp'] && !player.value?.getIsJumping()) {
     player.value?.jump();
+    movePlayer();
   }
 
-  updateMovement();
+  updatePlayerMovement();
 }
 
 function handleKeyup(e: { code: string | number }) {
   keys[e.code] = false;
-  updateMovement();
+  updatePlayerMovement();
 }
 
-function updateMovement() {
-  if (!player.value?.getIsJumping()) {
-    if (keys['ArrowLeft']) {
-      player.value?.setVelocityX(-5);
-    } else if (keys['ArrowRight']) {
-      player.value?.setVelocityX(5);
-    } else {
-      player.value?.setVelocityX(0);
-    }
+function updatePlayerMovement() {
+  if (player.value?.getIsJumping()) return;
+
+  movePlayer();
+}
+
+function movePlayer() {
+  if (keys['ArrowLeft']) {
+    player.value?.setVelocityX(-5);
+  } else if (keys['ArrowRight']) {
+    player.value?.setVelocityX(5);
+  } else {
+    player.value?.setVelocityX(0);
   }
 }
 
