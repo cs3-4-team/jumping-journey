@@ -1,3 +1,4 @@
+// @ts-ignore
 import { equal, deepEqual } from 'node:assert';
 import { Matrix } from './matrix';
 
